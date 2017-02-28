@@ -32,7 +32,6 @@ cracking_flags = [
   # TODO: make these generic for future ctfs
   "system_password (root)",
   "system_password (msfadmin)",
-  "mysql_password (dbadmin)",
   "mysql_password (root)"
 ]
 
@@ -61,6 +60,8 @@ short_names = {
   "Flag2" : "F2",
   "Flag3" : "F3",
   "Flag4" : "F4",
+  "Flag5" : "F5",
+  "Flag6" : "F6"
 }
 
 phases = {

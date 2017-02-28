@@ -15,14 +15,16 @@ For copyright and license information, please see the included LICENSE file.
 from __future__ import with_statement
 import phases
 import settings
+import subprocess
 import pickle
 import argparse
 import getpass
+import time
 import sys
 
 __author__ = "mt@trustdarkness.com (Michael Thompson)"
 
-def configure_host(config):
+def configure_host(config=None):
   """TODO: output file format is missing phase locations
   Runs all the steps needed to configure a host with the provided config 
   for a ctf.
@@ -44,13 +46,22 @@ def configure_host(config):
   Does not return anything, but writes a file called "solutions.conf"
   to the cwd and prints status information to the console
   """
+  if not config:
+    import studentconf
+    config = studentconf.config
   # we'll create a new solutions file just for comparison's sake
   solutions = {}
   for ident, hostconf in config.iteritems():
-    print "configuring this host for unique id %s. This id will not be " % ident
-    print "stored anywhere on the host itself, so please record and correlate "
-    print "this unique id with this exploitable host."
+    print "configuring this host for unique id %s." % ident #This id will not be " % ident
+#    print "stored anywhere on the host itself, so please record and correlate "
+#    print "this unique id with this exploitable host."
     soln_hostconf = {}
+
+    # setup initial conditions
+    subprocess.call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", "/root/.ssh/id_rsa", "-q", "-N", '"noflags"'])
+    subprocess.call(["mysql", "-uroot", "-e", "create user 'dbadmin'@'localhost' identified by 'noflag'"])
+    subprocess.call(["mysql", "-uroot", "-e", "flush privileges"])
+
     for phase, phaseconf in hostconf.iteritems():
       # these are hardcoded for now
       if phase == "Phase1":
@@ -67,12 +78,10 @@ def configure_host(config):
         flag_val = flag_data.values()[0]
         
         # special cases should eventually be coded out, but for time constraints
-	if function == "system_password (root)":
+        if function == "system_password (root)":
           our_func = p.system_password 
         elif function == "system_password (msfadmin)":
           our_func = p.system_password
-        elif function == "mysql_password (dbadmin)":
-          our_func = p.mysql_password
         elif function == "mysql_password (root)":
           our_func = p.mysql_password
         else:
@@ -108,16 +117,16 @@ def configure_host(config):
         soln_phaseconf[flag] = soln
       soln_hostconf[phase] = soln_phaseconf
     solutions[ident] = soln_hostconf
-    print "Unless you saw errors on the console, the host should be ready"
-    print "after a reboot.  We'll generate a solutions.conf file in the cwd"
-    print "that you can compare with the config file you supplied."
-    print ""
-    print "They will be very similar, but not identical.  Either can be "
-    print "printed using solutions.py -p filename."
-    print ""
-    print "IMPORTANT: please delete both of these files and the ctf"
-    print "generation scripts before launching the ctf (unless you want to"
-    print "sneakily make things easier)."
+    # print "Unless you saw errors on the console, the host should be ready"
+    # print "after a reboot.  We'll generate a solutions.conf file in the cwd"
+    # print "that you can compare with the config file you supplied."
+    # print ""
+    # print "They will be very similar, but not identical.  Either can be "
+    # print "printed using solutions.py -p filename."
+    # print ""
+    # print "IMPORTANT: please delete both of these files and the ctf"
+    # print "generation scripts before launching the ctf (unless you want to"
+    # print "sneakily make things easier)."
     with open("solutions.conf", "w") as f:
       pickle.dump(solutions, f)
 
@@ -134,8 +143,16 @@ if __name__ == "__main__":
    dest="config", help="filename to use to configure the ctf host.")
 
   args = aparser.parse_args()
-  if not args.config:
-    print "Please specify -c and a config file."
+#  if not args.config:
+#    print "Please specify -c and a config file."
   if args.config:
     with open(args.config, "r") as f:
       configure_host(pickle.load(f))
+  else:
+    try:
+      configure_host()
+      time.sleep(5)
+      subprocess.call("reboot")
+    except:
+      print "there's something wrong with the embedded config."
+      print "please contact your instructor."

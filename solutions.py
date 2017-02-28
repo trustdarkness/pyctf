@@ -36,10 +36,14 @@ import flags
 import settings
 import argparse
 import pickle
+import json
 
 __author__ = "mt@trustdarkness.com (Michael Thompson)"
 
-flags_per_phase = 4
+#flags_per_phase = 4
+p1_flags = 4
+p2_flags = 5
+p3_flags = 3
 
 def solutions_for_host(unique_identifier):
   """
@@ -76,6 +80,12 @@ def solutions_for_host(unique_identifier):
   for phase, functions in settings.phases.iteritems():
     # this should be abstracted
     phaseconf = {}
+    if phase == 'Phase1':
+      flags_per_phase = p1_flags
+    elif phase == 'Phase2':
+      flags_per_phase = p2_flags
+    elif phase == 'Phase3':
+      flags_per_phase = p3_flags
     for i, flag in enumerate(our_flag_nums):
       if i < flags_per_phase:
         free_phases = len(functions)
@@ -118,6 +128,8 @@ if __name__ == "__main__":
    help="unique id for host, could be student id, hash, ip address, etc")
   aparser.add_argument("-p", "--print", action="store", default=None, 
    dest="printout", help="filename to print the contents of for easy viewing.")
+  aparser.add_argument("-e", "--embed", action="store", default=None, 
+   dest="embed", help="file to embedd as importable python (host.py)")
 
   args = aparser.parse_args()
   if not args.ident and not args.printout:
@@ -134,6 +146,10 @@ if __name__ == "__main__":
     print "that name will be overwritten"
 
     conf_info = solutions_for_host(args.ident)
+    if args.embed:
+      with open("studentconf.py", "w") as f:
+        f.write("config = ")
+        json.dump(conf_info, f)        
     with open("%s.conf" % args.ident, "w") as f:
       pickle.dump(conf_info, f)
 
