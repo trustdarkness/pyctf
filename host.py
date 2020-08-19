@@ -22,8 +22,6 @@ import getpass
 import time
 import sys
 
-__author__ = "mt@trustdarkness.com (Michael Thompson)"
-
 def configure_host(config=None):
   """TODO: output file format is missing phase locations
   Runs all the steps needed to configure a host with the provided config 

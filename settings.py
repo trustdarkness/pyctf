@@ -9,8 +9,6 @@ For copyright and license information, please see the included LICENSE file.
 """
 import phases
 
-__author__ = "mt@trustdarkness.com (Michael Thompson)"
-
 nmap_flags = [ 
   "ftp_banner",
   "host_name", 

@@ -9,8 +9,6 @@ For copyright and license information, please see the included LICENSE file.
 """
 import os
 
-__author__ = "mt@trustdarkness.com (Michael Thompson)"
-
 # this is not super elegant.  Currently, the "seeds" and wordlist locations
 # are hardcoded.  
 possible_seeds = [

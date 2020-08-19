@@ -10,8 +10,6 @@ from __future__ import with_statement
 import subprocess
 import os
 
-__author__ = "mt@trustdarkness.com (Michael Thompson)"
-
 class Phase(object):
   """
   Phase class.  This is currently mostly a placeholder, but likely will 

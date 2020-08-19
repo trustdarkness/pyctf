@@ -38,8 +38,6 @@ import argparse
 import pickle
 import json
 
-__author__ = "mt@trustdarkness.com (Michael Thompson)"
-
 #flags_per_phase = 4
 p1_flags = 4
 p2_flags = 5
